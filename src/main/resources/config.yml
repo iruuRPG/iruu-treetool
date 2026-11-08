@@ -1,0 +1,36 @@
+# IruuTreeTool の設定 / IruuTreeTool configuration
+# 変えたら、サーバーを再起動するか /reload してください。/ Restart the server (or reload) after editing.
+treetool:
+  # 1本の木のブロック数の上限 (超えたら作らない) / Most blocks one tree may have (more and it is not put).
+  max-blocks: 60000
+  # 1tickに調べて置くブロック数 (少しずつ。多いと一瞬重くなる) / Blocks looked at and put per tick (more is heavier for a moment).
+  blocks-per-tick: 4000
+  # プレビュー (選んだブロックのままの試し置き): 設定を最後に変えてから反映するまでの tick (15 = 0.75秒。変えるたびに数え直す)
+  # Preview: ticks to wait after the last change of a setting before it is shown (15 = 0.75 s; counted again at every change).
+  preview-delay-ticks: 15
+  # プレビューで1tickに送るブロック数 / プレビューする木のブロック数の上限 (超えたら見せない)
+  # Preview: blocks sent per tick / most blocks a previewed tree may have (more and it is not shown).
+  preview-blocks-per-tick: 3000
+  preview-max-blocks: 40000
+  # ツールが届く距離 (ブロック)。遠くのブロックも、見てクリックすれば、クリックしたのと同じ (8〜256)
+  # How far the tool reaches (blocks): a block far off is clicked just by looking at it and clicking (8-256).
+  reach: 96
+  # true にすると、地形など固いブロックも置き換える。false は空気と草花だけ
+  # true: solid blocks (terrain) are replaced too. false: only air and plants.
+  replace-solid: false
+  # 部位ごとのブロックの初期値 (画面の部位のアイコン、または /treetool block で、プレイヤーごとに選び直せる。選んだブロックは設定と一緒に保存される)
+  # Default block of each part (a player can choose again in the menu or with /treetool block; the choice is saved with the settings).
+  materials:
+    trunk: OAK_WOOD
+    root: OAK_WOOD
+    branch: OAK_WOOD
+    leaf: OAK_LEAVES
+    snow: SNOW_BLOCK
+    # 細い木・樹形・装飾の木の枝: 壁 / フェンス / ハーフ / 階段 / トラップドア / フェンスゲート
+    # Thin branches of the thin, silhouette and ornate trees: wall / fence / slab / stairs / trapdoor / fence gate.
+    branch-wall: MUD_BRICK_WALL
+    branch-fence: OAK_FENCE
+    branch-slab: OAK_SLAB
+    branch-stair: OAK_STAIRS
+    branch-trapdoor: OAK_TRAPDOOR
+    branch-gate: OAK_FENCE_GATE

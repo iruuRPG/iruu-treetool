@@ -1,0 +1,9 @@
+# 見本の木: ヤシ (標準の数字) (木のツールの読み込み、または /treetool load palm)
+settings:
+  algorithm: palm
+  seed: 0
+  blocks:
+    trunk: JUNGLE_LOG
+    root: JUNGLE_LOG
+  leaf-gradient:
+  - JUNGLE_LEAVES

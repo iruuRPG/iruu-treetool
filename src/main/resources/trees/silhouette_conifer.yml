@@ -1,0 +1,17 @@
+# 見本の木: 樹形 針葉樹 (松) (mc_tree_gen の形。パレットもその標準) (木のツールの読み込み、または /treetool load silhouette_conifer)
+settings:
+  algorithm: silhouette
+  sil-shape: 2
+  sil-height: 28
+  sil-leaf: 0.5
+  seed: 0
+  blocks:
+    trunk: SPRUCE_LOG
+    branch: SPRUCE_WOOD
+    branch-stair: SPRUCE_STAIRS
+    branch-slab: SPRUCE_SLAB
+    branch-fence: SPRUCE_FENCE
+  leaf-gradient:
+  - SPRUCE_LEAVES
+  - OAK_LEAVES
+  - AZALEA_LEAVES

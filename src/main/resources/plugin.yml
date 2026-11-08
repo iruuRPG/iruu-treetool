@@ -1,0 +1,20 @@
+name: IruuTreeTool
+version: '${version}'
+main: io.github.iruurpg.treetool.IruuTreeTool
+api-version: '1.20'
+website: https://github.com/iruuRPG/iruu-treetool
+description: A tool for building trees block by block - algorithms, a menu, a preview, presets
+softdepend: [FastAsyncWorldEdit, WorldEdit]
+commands:
+  treetool:
+    description: "Tree tool: gives the tool; set, save, load, preview, generate, undo"
+    usage: /treetool [give|presets|scatter|off|menu|set|info|save|load|list|delete|undo|redo|preview|generate|block|build]
+    aliases:
+      - ptree
+      - ptool
+      - proceduraltool
+    permission: iruutreetool.use
+permissions:
+  iruutreetool.use:
+    description: Use the tree tool, the placing tool and /treetool
+    default: op

@@ -1,0 +1,35 @@
+# 見本の木: 細い柳 (くねった幹が低く分かれ、横へ長く伸びる枝、平たい葉の塊から垂れるつる) (木のツールの読み込み、または /treetool load thin_willow)
+settings:
+  algorithm: thin
+  thin-height: 4
+  thin-lean: 0.5
+  thin-curve: 0.7
+  thin-branches: 3
+  thin-length: 9
+  thin-side: 6
+  thin-side-length: 6.0
+  thin-depth: 2
+  thin-rise: 0.1
+  thin-upturn: 0.25
+  thin-kink: 0.55
+  thin-log-reach: 7
+  thin-foot: 2
+  thin-leaf-size: 2.25
+  thin-leaf-density: 40
+  thin-leaf-passes: 3
+  thin-leaf-along: 2.5
+  thin-leaf-flat: 0.6
+  thin-vines: 1
+  thin-vine-scale: 1.2
+  seed: 0
+  blocks:
+    trunk: DARK_OAK_LOG
+    branch: DARK_OAK_LOG
+    branch-wall: MUD_BRICK_WALL
+    branch-fence: DARK_OAK_FENCE
+    branch-slab: DARK_OAK_SLAB
+    branch-stair: DARK_OAK_STAIRS
+  leaf-gradient:
+  - DARK_OAK_LEAVES
+  - OAK_LEAVES
+  - AZALEA_LEAVES

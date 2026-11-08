@@ -1,0 +1,18 @@
+# 見本の木: 樹形 丸い広葉樹 (オーク) (mc_tree_gen の形。パレットもその標準) (木のツールの読み込み、または /treetool load silhouette_round)
+settings:
+  algorithm: silhouette
+  sil-shape: 0
+  sil-height: 0
+  seed: 0
+  blocks:
+    trunk: OAK_LOG
+    branch: OAK_WOOD
+    branch-stair: SPRUCE_STAIRS
+    branch-slab: SPRUCE_SLAB
+    branch-fence: SPRUCE_FENCE
+    branch-wall: MUD_BRICK_WALL
+  leaf-gradient:
+  - DARK_OAK_LEAVES
+  - OAK_LEAVES
+  - OAK_LEAVES
+  - AZALEA_LEAVES

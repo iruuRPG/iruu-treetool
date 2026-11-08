@@ -1,0 +1,121 @@
+package io.github.iruurpg.treetool;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/** The canopy, tiered and palm trees (the ones ported from Lua tree scripts; only in the build that has them). */
+class PortedTreesTest {
+
+    private static TreeSettings tree(String algorithm) {
+        TreeSettings settings = new TreeSettings();
+        settings.setAlgorithm(algorithm);
+        assertEquals(algorithm, settings.algorithm());
+        return settings;
+    }
+
+    private static Map<TreePart, Integer> count(Map<Long, TreePart> blocks) {
+        Map<TreePart, Integer> counts = new EnumMap<>(TreePart.class);
+        for (TreePart part : blocks.values()) counts.merge(part, 1, Integer::sum);
+        return counts;
+    }
+
+    @Test
+    void theirTrunksAndRootsAreWhereTheyShouldBe() {
+        assertTrue(count(TreeGenerator.build(tree("canopy"), 9L, null)).containsKey(TreePart.BRANCH));
+        assertTrue(count(TreeGenerator.build(tree("canopy"), 9L, null)).containsKey(TreePart.ROOT));
+        assertTrue(count(TreeGenerator.build(tree("tiered"), 9L, null)).containsKey(TreePart.ROOT));
+        assertFalse(count(TreeGenerator.build(tree("palm"), 9L, null)).containsKey(TreePart.BRANCH));
+    }
+
+    @Test
+    void snowOnlyWhenItIsOn() {
+        TreeSettings settings = tree("tiered");
+        assertFalse(count(TreeGenerator.build(settings, 3L, null)).containsKey(TreePart.SNOW));
+        settings.set(TreeSettings.Key.TIER_SNOW, 1);
+        assertTrue(settings.on(TreeSettings.Key.TIER_SNOW));
+        assertTrue(count(TreeGenerator.build(settings, 3L, null)).getOrDefault(TreePart.SNOW, 0) > 10);
+    }
+
+    @Test
+    void betaLeavesAreNoFurtherThanFourStepsFromALog() {
+        TreeSettings settings = tree("canopy");
+        settings.set(TreeSettings.Key.CANOPY_LEAF_SIZE, 4.0);
+        settings.set(TreeSettings.Key.CANOPY_BETA_LEAVES, 1);
+        Map<Long, TreePart> blocks = TreeGenerator.build(settings, 5L, null);
+        Set<Long> logs = blocks.entrySet().stream().filter(e -> e.getValue().shade() < 0).map(Map.Entry::getKey).collect(Collectors.toSet());
+        int leaves = 0;
+        for (Map.Entry<Long, TreePart> entry : blocks.entrySet()) {
+            if (entry.getValue().shade() < 0) continue;
+            leaves++;
+            int x = TreeVoxelizer.unpackX(entry.getKey()), y = TreeVoxelizer.unpackY(entry.getKey()), z = TreeVoxelizer.unpackZ(entry.getKey());
+            boolean near = false;
+            for (long log : logs) {
+                if (Math.abs(TreeVoxelizer.unpackX(log) - x) + Math.abs(TreeVoxelizer.unpackY(log) - y) + Math.abs(TreeVoxelizer.unpackZ(log) - z) <= 4) {
+                    near = true;
+                    break;
+                }
+            }
+            assertTrue(near, "a leaf far from the logs");
+        }
+        settings.set(TreeSettings.Key.CANOPY_BETA_LEAVES, 0);
+        assertTrue(count(TreeGenerator.build(settings, 5L, null)).get(TreePart.LEAF) > leaves, "beta leaves drop some leaves");
+    }
+
+    @Test
+    void willowVinesHangAndTheDeepestSettingStillEnds() {
+        TreeSettings settings = tree("canopy");
+        int plain = count(TreeGenerator.build(settings, 4L, null)).get(TreePart.LEAF);
+        settings.set(TreeSettings.Key.CANOPY_WILLOW, 1);
+        assertTrue(count(TreeGenerator.build(settings, 4L, null)).get(TreePart.LEAF) > plain);
+        // 5 branches a node, 6 deep: 19531 branches, grown from a stack (no recursion)
+        settings.set(TreeSettings.Key.CANOPY_DEPTH, 6);
+        settings.set(TreeSettings.Key.CANOPY_BRANCHES, 5);
+        settings.set(TreeSettings.Key.CANOPY_WILLOW, 0);
+        assertTrue(TreeGenerator.build(settings, 4L, null).size() > 1000);
+    }
+
+    @Test
+    void aPalmThatSplitsHasTwoCrowns() {
+        TreeSettings settings = tree("palm");
+        int one = count(TreeGenerator.build(settings, 6L, null)).get(TreePart.LEAF);
+        settings.set(TreeSettings.Key.PALM_SPLIT_CHANCE, 1.0);
+        int two = count(TreeGenerator.build(settings, 6L, null)).get(TreePart.LEAF);
+        assertTrue(two > one * 1.5, one + " " + two);
+        settings.set(TreeSettings.Key.PALM_ROOT_REACH, 2.0);
+        assertTrue(count(TreeGenerator.build(settings, 6L, null)).containsKey(TreePart.ROOT));
+    }
+
+    @Test
+    void theBranchesOfATierStartAtSeveralHeights() {
+        // no stagger: all at the tier's height, no random number drawn
+        java.util.Random random = new java.util.Random(3);
+        assertTrue(java.util.Arrays.stream(TieredTree.heights(random, 12, 4, 5, 0.0, 8, 27)).allMatch(y -> y == 12));
+        assertTrue(random.nextInt() == new java.util.Random(3).nextInt());
+        // spread over the band round it, more than one height, kept above the stump and under the top
+        java.util.Set<Integer> seen = new java.util.HashSet<>();
+        for (long seed = 1; seed <= 20; seed++) {
+            int[] heights = TieredTree.heights(new java.util.Random(seed), 12, 4, 5, 0.7, 8, 27);
+            java.util.Set<Integer> tier = new java.util.HashSet<>();
+            for (int y : heights) {
+                assertTrue(y >= 11 && y <= 13, y + " seed " + seed);
+                tier.add(y);
+            }
+            assertTrue(tier.size() >= 2, "seed " + seed);
+            seen.addAll(tier);
+            // at the stump the band is moved up, not cut: no tier bunched on the stump
+            int[] low = TieredTree.heights(new java.util.Random(seed), 8, 4, 5, 0.7, 8, 27);
+            assertTrue(java.util.Arrays.stream(low).filter(y -> y == 8).count() <= 2, java.util.Arrays.toString(low));
+        }
+        // (a band of 4 x 0.7 = 2.8 round 12: 11 to 13)
+        assertEquals(java.util.Set.of(11, 12, 13), seen);
+    }
+}
